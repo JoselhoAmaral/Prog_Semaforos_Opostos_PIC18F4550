@@ -1,0 +1,78 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+005     main.delay_reg1
+006     main.delay_reg2
+007     main.delay_reg3
+F83     PSP_DATA
+FB4.6   C1OUT
+FB4.7   C2OUT
+FBB     CCP_2
+FBB     CCP_2_LOW
+FBC     CCP_2_HIGH
+FBE     CCP_1_LOW
+FBE     CCP_1
+FBF     CCP_1_HIGH
+FE1-FE2 @READ_PACKED_MEMORY.P1
+FE1-FE2 @WRITE_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PROGRAM_MEMORY.P1
+FE9-FEA @READ_PROGRAM_MEMORY.P2
+FE9-FEA @READ_PACKED_MEMORY.P3
+FE9-FEA @WRITE_PACKED_MEMORY.P4
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P1
+FF6-FF8 @READ_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+000004  @cinit1
+000004  main
+000014  @cinit2
+0016  inicio
+000B  Delay100ms
+000F  loop1
+0012  loop2
+0015  exit
+001E  loopA
+0023  loopB
+0026  loopSemaforo
+0026  loopGreen
+002C  loopDelayGreen
+0031  loopYellow
+0035  loopDelayYellow
+003A  loopRed1
+0040  loopDelayRed1
+0045  loopRed2
+0049  loopDelayRed2
+
+Project Directory:
+    C:\Users\Joselho Amaral\Documents\Joselho\IFCE\S8 - Eng. Automação e Controle\Microcontroladores\Atividade semáforo\
+
+Project Files:
+    Configuracao_Semaforo.c                                 [11-jun-21 20:36  CRC=9ED4E567]
+    ..\..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\18f4550.h [12-nov-13 14:35  CRC=5337E248]
+
+Source signature=4544A9F7
+
+Units:
+    Configuracao_Semaforo (main)
+
+Compiler Settings:
+    Processor:      PIC18F4550
+    Pointer Size:   16
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    XREF file:   Configuracao_Semaforo.xsym
+    Errors:      Configuracao_Semaforo.err
+    Ext Symbols: Configuracao_Semaforo.esym
+    INHX32:      Configuracao_Semaforo.hex
+    Symbols:     Configuracao_Semaforo.sym
+    List:        Configuracao_Semaforo.lst
+    Debug/COFF:  Configuracao_Semaforo.cof
+    Project:     Configuracao_Semaforo.ccspjt
+    Call Tree:   Configuracao_Semaforo.tre
+    Statistics:  Configuracao_Semaforo.STA

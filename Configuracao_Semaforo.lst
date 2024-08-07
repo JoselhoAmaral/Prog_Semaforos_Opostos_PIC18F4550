@@ -1,0 +1,240 @@
+CCS PCH C Compiler, Version 5.015, 5967               11-jun-21 20:37
+
+               Filename:   C:\Users\Joselho Amaral\Documents\Joselho\IFCE\S8 - Eng. Automação e Controle\Microcontroladores\Atividade semáforo\Configuracao_Semaforo.lst
+
+               ROM used:   158 bytes (0%)
+                           Largest free fragment is 32610
+               RAM used:   7 (0%) at main() level
+                           7 (0%) worst case
+               Stack used: 0 locations
+               Stack size: 31
+
+*
+0000:  GOTO   0004
+.................... #include <18f4550.h> 
+.................... //////////// Standard Header file for the PIC18F4550 device //////////////// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... ////        (C) Copyright 1996, 2013 Custom Computer Services          //// 
+.................... //// This source code may only be used by licensed users of the CCS C  //// 
+.................... //// compiler.  This source code may only be distributed to other      //// 
+.................... //// licensed users of the CCS C compiler.  No other use, reproduction //// 
+.................... //// or distribution is permitted without written permission.          //// 
+.................... //// Derivative programs created using this software in object code    //// 
+.................... //// form are not restricted in any way.                               //// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... #device PIC18F4550 
+....................  
+.................... #list 
+....................  
+.................... #fuses hs,nowdt,noprotect,nolvp,NOMCLR 
+....................  
+.................... void main() 
+0004:  CLRF   FF8
+0006:  BCF    FD0.7
+0008:  MOVF   FC1,W
+000A:  ANDLW  C0
+000C:  IORLW  0F
+000E:  MOVWF  FC1
+0010:  MOVLW  07
+0012:  MOVWF  FB4
+.................... { 
+....................  
+.................... int delay_reg1;// declaração de variáveis 
+.................... int delay_reg2;// declaração de variáveis 
+.................... int delay_reg3; 
+....................  
+.................... #asm 
+....................  
+.................... goto inicio // vai para label inicio 
+0014:  BRA    002C
+.................... Delay100ms: 
+....................   movlw 0x83 //w=131d 
+0016:  MOVLW  83
+....................   movwf delay_reg1 // reg1=131d 
+0018:  MOVWF  05
+....................   movlw 0xFF // w=255d 
+001A:  MOVLW  FF
+....................   movwf delay_reg2 // reg2=255d 
+001C:  MOVWF  06
+.................... loop1: 
+....................   DECFSZ delay_reg1 // decrementa e pula se igual a zero 
+001E:  DECFSZ 05,F
+....................   goto loop2 
+0020:  BRA    0024
+....................   goto exit 
+0022:  BRA    002A
+.................... loop2: 
+....................   DECFSZ delay_reg2 // decrementa e pula se igual a zero 
+0024:  DECFSZ 06,F
+....................   goto loop2 
+0026:  BRA    0024
+....................   goto loop1 
+0028:  BRA    001E
+.................... exit: 
+002A:  RETURN 0
+....................   RETURN 
+....................  
+.................... inicio: 
+....................    movlw 0x00 // 00h= pullup habilitado;80h=pullup desabilitado. 
+002C:  MOVLW  00
+....................    movwf 0xFF1 //intcon2=00h 
+002E:  MOVWF  FF1
+....................    movlw 0xFF //w=11111111b 
+0030:  MOVLW  FF
+....................    movwf 0xF93 //trisbB=11111111b 
+0032:  MOVWF  F93
+....................    movlw 0x00 //w=00000000b 
+0034:  MOVLW  00
+....................    movwf 0xF95 // trisD=00000000b 
+0036:  MOVWF  F95
+....................    movlw 0xE6 //w=11100110b 
+0038:  MOVLW  E6
+....................    movwf 0xFD3 // Oscilador 4Mhz Sem cristal e capacitor $$$$ 
+003A:  MOVWF  FD3
+....................  
+.................... //início da condição XOR (ou exclusivo) 
+.................... loopA: // testa condição B2 = 0 (botão pressionado) e B3 = 0(botão pressionado) 
+....................    btfsc 0xf81.2 //testa o pino 2 da porta b e pula a próxima linha se 0 
+003C:  BTFSC  F81.2
+....................    goto loopB    // Se B2 = 1, irá para o loopB para confirmar a condição B0 = 1 e B1 = 1 
+003E:  BRA    0046
+....................    btfsc 0xf81.3 //testa o pino 3 da porta b e pula se 0 
+0040:  BTFSC  F81.3
+....................    goto loopSemaforo    // B3 = 1 
+0042:  BRA    004C
+....................    goto loopA           // B3 = 0 
+0044:  BRA    003C
+....................    // Testa a condição B2 = 0 e B3 = 0 e caso verdade, reinicia o loop 
+....................  
+.................... loopB: // Testa a condição B3 = 1 e caso verdade, reinicia o loop  
+....................    btfss 0xf81.3 //testa o pino 3 da porta b e pula se 1 
+0046:  BTFSS  F81.3
+....................    goto loopSemaforo    // B3 = 0 
+0048:  BRA    004C
+....................    goto loopA           // B3 = 1 
+004A:  BRA    003C
+.................... //fim da condição XOR 
+....................  
+....................  
+.................... //Caso B2 = 1 e B3 = 0 ou B2 = 0 e B3 = 1, o código proceguirá para a próxima fase 
+.................... loopSemaforo: 
+.................... // Para o semáforo em verde 
+....................    loopGreen: 
+....................    // Via 1 
+....................       bcf  0xf83.2 //desliga o pino D2 ou o pino do vermelho 
+004C:  BCF    F83.2
+....................       bsf  0xf83.0 //Liga o pino D0 ou o pino do verde 
+004E:  BSF    F83.0
+....................    // Via 2 
+....................       bcf  0xf83.4 //desliga o pino D4 ou o pino do amarelo 
+0050:  BCF    F83.4
+....................       bsf  0xf83.5 //Liga o pino D5 ou o pino do vermelho 
+0052:  BSF    F83.5
+....................       //Coloca um delay de 8s (80x0,1s) 
+....................       movlw 0x50 // Passa para w = 80d 
+0054:  MOVLW  50
+....................       movwf delay_reg3 // Atribui 80 decimal ao delay_reg3 
+0056:  MOVWF  07
+....................        
+....................       loopDelayGreen: 
+....................          decfsnz delay_reg3; //Caso delay_reg3 seja diferente de zero, pula a próxima linha 
+0058:  DCFSNZ 07,F
+....................          goto loopYellow 
+005A:  BRA    0062
+....................          call Delay100ms // vai pra subrotina Delay100ms 
+005C:  CALL   0016,1
+....................       goto loopDelayGreen // volta a repetir o loopDelay até que delay_reg3 seja 0 
+0060:  BRA    0058
+....................  
+....................  
+.................... // Para o semáforo em amarelo 
+....................    loopYellow: 
+....................    // Via 1 
+....................       bcf  0xf83.0 //desliga o pino D0 ou o pino do verde 
+0062:  BCF    F83.0
+....................       bsf  0xf83.1 //Liga o pino D1 ou o pino do amarelo 
+0064:  BSF    F83.1
+....................    // Via 2  
+....................       // Mantem o pino D5 ou o LED vermelho ligado  
+....................       //Coloca um delay de 3s (30x0,1s) 
+....................       movlw 0x1E // Passa para w = 30d 
+0066:  MOVLW  1E
+....................       movwf delay_reg3 // Atribui 30 decimal ao delay_reg3 
+0068:  MOVWF  07
+....................     
+....................    loopDelayYellow: 
+....................       decfsnz delay_reg3; //Caso delay_reg3 seja diferente de zero, pula a próxima linha 
+006A:  DCFSNZ 07,F
+....................       goto loopRed1 
+006C:  BRA    0074
+....................       call Delay100ms // vai pra subrotina Delay100ms 
+006E:  CALL   0016,1
+....................    goto loopDelayYellow // volta a repetir o loopDelay até que delay_reg3 seja 0 
+0072:  BRA    006A
+....................  
+....................     
+.................... // Para o semáforo em vermelho 
+....................    loopRed1: //parte 1 
+....................    // Via 1    
+....................       bcf  0xf83.1 //desliga o pino D1 ou o pino do amarelo 
+0074:  BCF    F83.1
+....................       bsf  0xf83.2 //Liga o pino D2 ou o pino vermelho 
+0076:  BSF    F83.2
+....................    // Via 2    
+....................       bcf  0xf83.5 //desliga o pino D5 ou o pino do vermelho 
+0078:  BCF    F83.5
+....................       bsf  0xf83.3 //Liga o pino D3 ou o pino verde 
+007A:  BSF    F83.3
+....................       //Coloca um delay de 8s (80x0,1s) 
+....................       movlw 0x50 // Passa para w = 80d 
+007C:  MOVLW  50
+....................       movwf delay_reg3 // Atribui 80 decimal ao delay_reg3 
+007E:  MOVWF  07
+....................        
+....................       loopDelayRed1: 
+....................          decfsnz delay_reg3; //Caso delay_reg3 seja diferente de zero, pula a próxima linha 
+0080:  DCFSNZ 07,F
+....................          goto loopRed2 
+0082:  BRA    008A
+....................          call Delay100ms // vai pra subrotina Delay100ms 
+0084:  CALL   0016,1
+....................       goto loopDelayRed1 // volta a repetir o loopDelay até que delay_reg3 seja 0 
+0088:  BRA    0080
+....................  
+....................  
+....................    loopRed2: //parte 2 
+....................    // Via 1 
+....................       // Mantem o D2 ou o pino do vermelho ligado 
+....................    // Via 2  
+....................       bcf  0xf83.3 //desliga o pino D3 ou o pino do verde 
+008A:  BCF    F83.3
+....................       bsf  0xf83.4 //Liga o pino D4 ou o pino amarelo 
+008C:  BSF    F83.4
+....................       //Coloca um delay de 3s (30x0,1s) 
+....................       movlw 0x1E // Passa para w = 30d 
+008E:  MOVLW  1E
+....................       movwf delay_reg3 // Atribui 30 decimal ao delay_reg3 
+0090:  MOVWF  07
+....................     
+....................    loopDelayRed2: 
+....................       decfsnz delay_reg3; //Caso delay_reg3 seja diferente de zero, pula a próxima linha 
+0092:  DCFSNZ 07,F
+....................       goto loopGreen 
+0094:  BRA    004C
+....................       call Delay100ms // vai pra subrotina Delay100ms 
+0096:  CALL   0016,1
+....................    goto loopDelayRed2 // volta a repetir o loopDelay até que delay_reg3 seja 0 
+009A:  BRA    0092
+....................  
+.................... #endasm 
+.................... } 
+009C:  SLEEP 
+
+Configuration Fuses:
+   Word  1: CC3F   PLL12 CPUDIV4 USBDIV HS FCMEN IESO
+   Word  2: 1E3E   PUT BROWNOUT BORV21 VREGEN NOWDT WDT32768
+   Word  3: 0700   CCP2C1 PBADEN LPT1OSC NOMCLR
+   Word  4: 00A1   STVREN NOLVP ICSP2 NOXINST NODEBUG
+   Word  5: C00F   NOPROTECT NOCPB NOCPD
+   Word  6: E00F   NOWRT NOWRTC NOWRTB NOWRTD
+   Word  7: 400F   NOEBTR NOEBTRB
